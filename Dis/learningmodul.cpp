@@ -63,7 +63,7 @@ bool LearningModul::compute(const int &n)
 
 void LearningModul::analize(const int& n)
 {
-    delta(data[n]->getSize());
+    delta.resize(data[n]->getSize());
     for (int i = 0; i < data.size(); ++i)
     {
         if (i != n)
