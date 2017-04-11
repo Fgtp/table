@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     significancetable.cpp \
     object.cpp \
     learningmodul.cpp \
-    dialogobj.cpp
+    dialogobj.cpp \
+    turntable.cpp
 
 HEADERS  += mainwindow.h \
     significancetable.h \
     object.h \
     learningmodul.h \
-    dialogobj.h
+    dialogobj.h \
+    turntable.h
 
 FORMS    += mainwindow.ui \
     dialogobj.ui
