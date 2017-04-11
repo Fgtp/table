@@ -13,32 +13,32 @@ TurnTable::~TurnTable()
 void TurnTable::compute()
 {
     bool fl = false;
-    QVector<double> err;
-    for(int i = 0; i < cnt; ++i)
+    int c = 0;
+    while(c < cnt)
     {
-        for(int j = 0; j < column; ++j)
+        for(int k = 0; k < column; ++k)
         {
             fl = true;
             while(fl)
             {
                 QVector<double> pr(column);
                 double sum = 0;
-                for(int k = 0; k < column; ++k)
+                for(int i = 0; i < column; ++i)
                 {
-                    for(int m = 0; m < row; ++m)
+                    for(int j = 0; j < row; ++j)
                     {
-                        pr[k] += w[k][j]*function_G(et[j], et [k], sko);
+                        pr[i] += w[i][i]*function_G(et[k], et[j], sko);
                     }
-                    sum  += pr[k];
+                    sum  += pr[i];
                 }
-                QVector<double> err(column);
-                for(int k = 0; k < column; ++k)
-                {
-                    err.push_back(ePap[i][k] - pr[k]/sum);
-                }
+                QVector<double> err;
                 for(int j = 0; j < column; ++j)
                 {
-                    if(abs(err[j]) < pres)
+                    err.push_back(ePap[k][j] - pr[j]/sum);
+                }
+                for(int i = 0; i < column; ++i)
+                {
+                    if(err[i] < pres && err[i] > -pres)
                     {
                         fl = false;
                     }
@@ -48,21 +48,21 @@ void TurnTable::compute()
                         break;
                     }
                 }
-                for(int j = 0; j < column; ++j)
+                for(int i = 0; i < column; ++i)
                 {
-                    for(int k = 0; k < row; ++k)
+                    for(int j = 0; j < row; ++j)
                     {
-                        double t = objs[j]->getW(k);
-                        double w = t + st*objs[j]->getDist(learnData[j], j);
-                        if(w < 0)
-                            w = t;
-                        objs[j]->setW(j, w);
+                        double t = w[j][i];
+                        w[j][i] += st * err[i] * function_G(et[i], et[j], sko);
+                        if(w[j][i] < 0)
+                            w[j][i] = t;
                     }
                 }
                 norm();
             }
         }
 
+        ++c;
         /*
         for(int m = row - 1; m>=0; ++m)
         {
@@ -147,6 +147,8 @@ void TurnTable::init()
     ePap[2] = {0.25, 0.5, 0.25};
 
     pres = 0.0001;
+
+    st = 2;
 }
 
 void TurnTable::norm()
@@ -230,9 +232,7 @@ double TurnTable::function_G(const double &x,
                              const double &m,
                              const double &sko)
 {
-    if(abs(0 - sko) > 1E-8)
-        return exp(-_POW2(m - x)/(_POW2(sko)*2))/(sko * sqrt(2*M_PI));
-    return 0.;
+    return exp(-_POW2(m - x)/(_POW2(sko)*2))/(sko * sqrt(2*M_PI));
 }
 
 void TurnTable::setCnt(const int &value)
