@@ -1,9 +1,11 @@
 #ifndef TURNTABLE_H
 #define TURNTABLE_H
 
+#define _USE_MATH_DEFINES
+
 #include <QVector>
 #include <QDebug>
-#include <cmath>
+#include <math.h>
 #include "object.h"
 
 class TurnTable
@@ -14,6 +16,7 @@ public:
 
     void compute();
     void init();
+    void norm();
 
     int getColumn() const;
     void setColumn(const int &value);
@@ -29,17 +32,29 @@ public:
 
     void pushObj(const MyObject &);
 
-    double getE() const;
-    void setE(double value);
+    double getPres() const;
+    void setPres(double value);
+    
+    void setEPap(const QVector<QVector<double> > &value);
+
+    void setSt(double value);
+
+    double function_G(const double &x,
+                      const double &m,
+                      const double &sko);
 
 private:
-
+    
     int cnt;
     int row;
     int column;
     double pres;
+    double st;
+    double sko;
+    QVector<QVector<double> >w;
     QVector<MyObject* > objs;
-    QVector<double> ePap;
+    QVector<double> et;
+    QVector<QVector<double> >ePap;
     QVector<double> learnData;
 };
 
