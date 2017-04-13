@@ -41,7 +41,7 @@ void TurnTable::compute()
                 std::cout << std::endl;
                 foreach (double er, err)
                 {
-                    if(er < pres && er > -pres)
+                    if(abs(er) < pres && er > -pres)
                     {
                         fl = false;
                     }
@@ -83,10 +83,8 @@ void TurnTable::init()
             w[i][j] = 1/(double)column;
         }
     }
-
     et.resize(row);
     et = {1000};
-
     ePap.resize(row);
     for(int i = 0; i < row; ++i)
     {
@@ -94,9 +92,7 @@ void TurnTable::init()
     }
 
     ePap[0] = {0.60, 0.3, 0.1 };
-
     pres = 0.005;
-
     st = 2;
 }
 
