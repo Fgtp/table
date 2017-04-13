@@ -1,4 +1,5 @@
 #include "turntable.h"
+#include <iostream>
 
 TurnTable::TurnTable()
 {
@@ -16,7 +17,7 @@ void TurnTable::compute()
     int c = 0;
     while(c < cnt)
     {
-        for(int k = 0; k < column; ++k)
+        for(int k = 0; k < row; ++k)
         {
             fl = true;
             while(fl)
@@ -27,18 +28,20 @@ void TurnTable::compute()
                 {
                     for(int j = 0; j < row; ++j)
                     {
-                        pr[i] += w[i][i]*function_G(et[k], et[j], sko);
+                        pr[i] += w[j][i]*function_G(et[k], et[j], sko);
                     }
                     sum  += pr[i];
                 }
                 QVector<double> err;
                 for(int j = 0; j < column; ++j)
                 {
+                    std::cout << "P["<<j<<"] = " << pr[j]/sum << "  ";
                     err.push_back(ePap[k][j] - pr[j]/sum);
                 }
-                for(int i = 0; i < column; ++i)
+                std::cout << std::endl;
+                foreach (double er, err)
                 {
-                    if(err[i] < pres && err[i] > -pres)
+                    if(er < pres && er > -pres)
                     {
                         fl = false;
                     }
@@ -53,7 +56,7 @@ void TurnTable::compute()
                     for(int j = 0; j < row; ++j)
                     {
                         double t = w[j][i];
-                        w[j][i] += st * err[i] * function_G(et[i], et[j], sko);
+                        w[j][i] += st * err[i] * function_G(et[k], et[j], sko);
                         if(w[j][i] < 0)
                             w[j][i] = t;
                     }
@@ -61,108 +64,54 @@ void TurnTable::compute()
                 norm();
             }
         }
-
         ++c;
-        /*
-        for(int m = row - 1; m>=0; ++m)
-        {
-            fl = true;
-            QVector<double> pr(column);
-            while(fl)
-            {
-                double sum = 0;
-                for(int j = 0; j < column - 1; ++j)
-                {
-                    for(int k = 0; k < row; ++k)
-                    {
-                        pr[j] += objs[j]->getW(k)*objs[j]->getDist(objs[m], j);
-                    }
-                    sum += pr[j];
-                }
-                QVector<double> pap(column);
-                for(int j = 0; j < column - 1; ++j)
-                {
-                    pap[j] = pr[j]/sum;
-                    err.push_back(ePap[m][j] - pap[j]);
-                }
-                for(int j = 0; j < column -1; ++j)
-                {
-                    if(abs(err[j]) < pres)
-                    {
-                        fl = false;
-                    }
-                    else
-                    {
-                        fl = true;
-                        break;
-                    }
-                }
-                for(int j = 0; j < column - 1; ++j)
-                {
-                    for(int k = 0; k < row; ++k)
-                    {
-                        double t = objs[j]->getW(k);
-                        double w = t + st*objs[j]->getDist(learnData[j], j);
-                        if(w < 0)
-                            w = t;
-                        objs[j]->setW(j, w);
-                    }
-                }
-                norm();
-            }
-        }
-        */
+        st /= 2;
     }
 }
 
 void TurnTable::init()
 {
     column = 3;
-    row = 3;
+    row = 1;
     sko = 100;
-    for(int i = 0; i < 3; ++i)
-    {
-        ObjNormalDist* ptr = new ObjNormalDist(1/column);
-        Parameter p;
-        p.m = 1000 + i*1000;
-        ptr->setParam(p);
-        objs.push_back(ptr);
-        ptr->setSko(100);
-    }
-
-    et.resize(column);
-    et = {1000, 2000, 3000};
-
-    ePap.resize(column);
-    w.resize(column);
+    w.resize(row);
     for(int i = 0; i < row; ++i)
     {
-        ePap[i].resize(row);
-        w[i].resize(row);
-        w[i] = {0.33, 0.33, 0.33};
+        w[i].resize(column);
+        for(int j = 0; j < column; ++j)
+        {
+            w[i][j] = 1/(double)column;
+        }
+    }
+
+    et.resize(row);
+    et = {1000};
+
+    ePap.resize(row);
+    for(int i = 0; i < row; ++i)
+    {
+        ePap[i].resize(column);
     }
 
     ePap[0] = {0.60, 0.3, 0.1 };
-    ePap[1] = {0.10, 0.7, 0.2 };
-    ePap[2] = {0.25, 0.5, 0.25};
 
-    pres = 0.0001;
+    pres = 0.005;
 
     st = 2;
 }
 
 void TurnTable::norm()
 {
-    for(int i = 0; i < column; ++i)
+    for(int j = 0; j < row; ++j)
     {
         double sum = 0;
-        for(int j = 0; j < row; ++j)
+        for(int i = 0; i < column; ++i)
         {
-            sum += w[i][j];
+            sum += w[j][i];
         }
-        for(int j = 0; j < row; ++j)
+        for(int i = 0; i < column; ++i)
         {
-            w[i][j] = w[i][j]/sum;
+            w[j][i] /= sum;
         }
     }
 }
