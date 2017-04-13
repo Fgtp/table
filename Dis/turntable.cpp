@@ -41,7 +41,7 @@ void TurnTable::compute()
                 std::cout << std::endl;
                 foreach (double er, err)
                 {
-                    if(abs(er) < pres && er > -pres)
+                    if(er < pres && er > -pres)
                     {
                         fl = false;
                     }
