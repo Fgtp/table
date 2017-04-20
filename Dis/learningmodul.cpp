@@ -3,6 +3,8 @@
 
 bool LearningModul::Learn(const int& n)
 {
+    analize(n);
+
     if (n >= data.size())
     {
         qDebug() << "Указан ошибочный объект";
@@ -11,7 +13,7 @@ bool LearningModul::Learn(const int& n)
 
     int sz = 2;
     QVector<double> v(sz);
-    for(int i = 0; i < 2; ++i)
+    for(int i = 0; i < 1; ++i)
     {
         v[0] = rand()%30 + (rand()%5) * cos(i);
         v[1] = rand()%30 + (rand()%5) * sin(i);
@@ -29,7 +31,7 @@ bool LearningModul::Learn(const int& n)
 bool LearningModul::compute(const int &n)
 {
     double sum = this->getSum(n);
-    SignificanceTable t(4, 5, pres);
+    SignificanceTable t(2, 5, pres);
     int res = 0;
     double max = 0.;
     //Считаем знаменатель;
@@ -78,6 +80,19 @@ void LearningModul::analize(const int& n)
     }
 }
 
+double LearningModul::getSameParameter(const int &n)
+{
+    double sum = 0;
+    foreach (double val, delta)
+    {
+        sum += val;
+    }
+
+    return (n < delta.size()) ?
+           ((sum < 1E-8) ? 0. :(1 - delta[n]/sum))
+           : throw n;
+}
+
 bool LearningModul::test()
 {
     double sum = 0.;
@@ -101,7 +116,7 @@ bool LearningModul::test()
 void LearningModul::createData()
 {
     int cnt = 3;
-    int size = 4;
+    int size = 2;
 
     for(int i = 1; i < cnt; ++i)
     {
@@ -110,11 +125,11 @@ void LearningModul::createData()
         data.append(ob);
         for(int j = 0; j < size; ++j)
         {
-            ob->setM(j, rand() % 15);
+            ob->setM(j, i*5 + 10);
             ob->setW(j, 1/(double)size);
         }
-        ob->setSko(10);
     }
+    ObjNormalDist::setSko(10);
 }
 
 void LearningModul::search(const int& n)
@@ -160,7 +175,7 @@ double LearningModul::grad(const int &n)
     double gr = 0.;
     for(int i = 0; i < data[n]->getSize(); ++i)
     {
-        double p = data[n]->P() / data[n]->getW(i);
+        double p = data[n]-> P() / data[n]->getW(i);
         gr += data[n]->getSum() * p
                 /_POW2(data[n]->getSum() + data[n]->P());
     }
@@ -175,9 +190,7 @@ double LearningModul::aProb(const int &n)
 
     for(int i = 0; i < data[n]->getSize(); ++i)
     {
-        // Т.к. значение в.к. на данный момент считается постоянным
-        // на всей обучащей выборе, то его можно вынести за скобки
-//        res *= data[n]->getVal(i) * data[n]->getW(i);
+
     }
     res *= data[n]->getProb();
 

@@ -9,11 +9,11 @@ int main(int argc, char *argv[])
     srand(time (NULL));
 //    for(int i = 0; i < 1000; ++i )
 //    {
-//        LearningModul l;
-//        l.Learn(0);
+        LearningModul l;
+        l.Learn(0);
 //    }
-     TurnTable t;
-     t.compute();
+//     TurnTable t;
+//     t.compute();
 //    MainWindow w;
 //    w.show();
 

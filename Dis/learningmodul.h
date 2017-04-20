@@ -24,6 +24,8 @@ public:
 
     bool compute(const int& n);
     void analize(const int &n);
+    double getSameParameter(const int &n);
+
     bool test();
     void addObj(MyObject* obj);
     void createData();
